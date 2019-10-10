@@ -22,7 +22,6 @@ ENTRYPOINT ["/bin/bash", "-c", " \
     echo \"== Startup Tasks ==\" && \
     echo \"Saving ENV Variables to /etc/environment for cron usage, if needed.\" && \
     printenv | grep -v \"no_proxy\" >> /etc/environment && \
-
     cd /home/qatester ; \
     echo \"Downloading updates from bwa.katalon.setup...\" && \
     wget -O \"setup.zip\" \"${BWA_KATALON_SETUP_REPO_URL}\" && \
