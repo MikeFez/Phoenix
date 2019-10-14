@@ -5,7 +5,7 @@ LABEL maintainer="Michael Fessenden <michael@mikefez.com>"
 ENV SSH_PRIVATE_KEY=
 ENV GIT_REPO=
 ENV REPO_BRANCH="master"
-ENV LAUNCH_CMD=
+ENV LAUNCH_CMD="sh launch.sh"
 ENV UPDATE_METHOD="FILE"
 ENV GIT_LOCAL_FOLDER="/opt/local_repository"
 
