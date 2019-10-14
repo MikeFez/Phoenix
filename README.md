@@ -31,6 +31,7 @@ services:
       - REPO_BRANCH=master  # Optional
       - GIT_LOCAL_FOLDER=FILE  # Optional
       - UPDATE_METHOD=FILE  # Optional
+      - SECONDS_BETWEEN_CHECKS=30  # Optional
     volumes:  # Volumes are not required, but can be added if you'd like the container's time to match the host machine
       - /etc/localtime:/etc/localtime:ro 
       - /etc/timezone:/etc/timezone:ro
