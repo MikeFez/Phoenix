@@ -8,6 +8,7 @@ ENV REPO_BRANCH="master"
 ENV LAUNCH_CMD="sh launch.sh"
 ENV UPDATE_METHOD="FILE"
 ENV GIT_LOCAL_FOLDER="/opt/local_repository"
+ENV SECONDS_BETWEEN_CHECKS="30"
 
 ENTRYPOINT ["/bin/sh", "-c", " \
     if [[ -z \"$GIT_REPO\" ]]; then echo \"ERROR: GIT_REPO is not set! Configure it and redeploy the container.\" && tail -f /dev/null; fi && \
@@ -80,7 +81,7 @@ ENTRYPOINT ["/bin/sh", "-c", " \
                 exit ; \
             fi; \
         fi; \
-        sleep 15; \
+        sleep ${SECONDS_BETWEEN_CHECKS}; \
     done"]
 
 RUN apk update && \
