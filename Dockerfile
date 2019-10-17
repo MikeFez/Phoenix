@@ -8,6 +8,7 @@ ENV REPO_BRANCH="master"
 ENV LAUNCH_CMD="sh launch.sh"
 ENV UPDATE_METHOD="FILE"
 ENV GIT_LOCAL_FOLDER="/opt/local_repository"
+ENV ADDITIONAL_APK=
 ENV SECONDS_BETWEEN_CHECKS="30"
 
 ENTRYPOINT ["/bin/sh", "-c", " \
@@ -23,16 +24,22 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     echo \"GIT_REPO is ${GIT_REPO}\" && \
     echo \"REPO_BRANCH is ${REPO_BRANCH}\" && \
     echo \"LAUNCH_CMD is ${LAUNCH_CMD}\" && \
+    echo \"ADDITIONAL_APK is ${ADDITIONAL_APK}\" && \
     echo \" \" && \
     \
     \
     echo \"===== Startup Tasks =====\" && \
+    if ! [[ -z \"$ADDITIONAL_APK\" ]]; then \
+        clean_list=echo $( echo \"$ADDITIONAL_APK\" | tr ',' ' ') && \
+        echo \"Preparing to add additional apk [${clean_list}]\" && \
+        apk add --no-cache ${clean_list} && \
+    fi && \
     mkdir -p ${GIT_LOCAL_FOLDER} && \
     cd ${GIT_LOCAL_FOLDER} && \
     rm -f /GIT_UPDATE_DETECTED /GIT_COMMITS /TASK_SUBPROCESS_PID && \
     if ! [[ -z \"$SSH_PRIVATE_KEY\" ]]; then \
         if ! [[ -f /root/.ssh/id_rsa ]]; then \
-            echo \"Configuring system to use provided SSH key\" & \
+            echo \"Configuring system to use provided SSH key\" && \
             mkdir -p /root/.ssh/ && \
             echo -e ${SSH_PRIVATE_KEY} > /root/.ssh/id_rsa && \
             echo \"StrictHostKeyChecking no\" >> /root/.ssh/config && \
@@ -85,5 +92,5 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     done"]
 
 RUN apk update && \
-    apk add --no-cache curl git nano mc htop psmisc openssh python3 procps && \
+    apk add --no-cache curl git nano mc htop psmisc openssh python3 procps libssl-dev && \
     pip3 install virtualenv
