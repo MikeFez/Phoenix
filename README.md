@@ -13,7 +13,7 @@ The idea is that upon start, the container will populate the `~/.ssh/id_rsa` fil
 | `-e REPO_BRANCH=master` | **Optional**, `master` by default. The branch that should be checked out and monitored for new commits. |
 | `-e GIT_LOCAL_FOLDER=/opt/local_repository` | **Optional**, `/opt/local_repository` by default. This is the folder which the git repository is downloaded to, and the LAUNCH_CMD shall execute in. |
 | `-e UPDATE_METHOD=FILE` | **Optional**, `FILE` by default. Options are `FILE`, or `RESTART`. This controls what happens should new commits be detected in the repository. _RESTART_ causes the container to immediately shut down (and restarted if configured properly), _FILE_ places an empty file named `GIT_UPDATE_DETECTED` on the root directory of the container. This can be used to wrap up the script being executed, which upon exit, will restart the container. |
-| `-e ADDITIONAL_APK=` | **Optional**, empty by default. Additional packages to add to the container, on start. |
+| `-e ADDITIONAL_APK=` | **Optional**, empty by default. Additional packages to add to the container (separated with commas, no spaces), on start. |
 | `-e SECONDS_BETWEEN_CHECKS=30` | **Optional**, `30` by default. The number of seconds to wait in between checks for new commits. |
 
 ## docker-compose example
