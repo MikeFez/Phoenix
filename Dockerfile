@@ -31,6 +31,7 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     if ! [[ -z \"$ADDITIONAL_APK\" ]]; then \
         clean_list=echo $( echo \"$ADDITIONAL_APK\" | tr ',' ' ') && \
         echo \"Preparing to add additional apk [${clean_list}]\" && \
+        echo \"CMD: apk add --no-cache ${clean_list}\" && \
         apk add --no-cache ${clean_list} ; \
     fi && \
     mkdir -p ${GIT_LOCAL_FOLDER} && \
