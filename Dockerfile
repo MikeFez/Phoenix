@@ -32,8 +32,8 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     if ! [[ -z \"$ADDITIONAL_APK\" ]]; then \
         clean_list=echo $( echo \"$ADDITIONAL_APK\" | tr ',' ' ') && \
         echo \"Preparing to add additional apk [${clean_list}]\" && \
-        apk add --no-cache ${clean_list} && \
-    fi && \
+        apk add --no-cache ${clean_list} ; \
+    fi ; \
     mkdir -p ${GIT_LOCAL_FOLDER} && \
     cd ${GIT_LOCAL_FOLDER} && \
     rm -f /GIT_UPDATE_DETECTED /GIT_COMMITS /TASK_SUBPROCESS_PID && \
@@ -92,5 +92,5 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     done"]
 
 RUN apk update && \
-    apk add --no-cache curl git nano mc htop psmisc openssh python3 procps&& \
+    apk add --no-cache curl git nano mc htop psmisc openssh python3 procps && \
     pip3 install virtualenv
