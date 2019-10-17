@@ -29,8 +29,8 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     \
     echo \"===== Startup Tasks =====\" && \
     if ! [[ -z \"$ADDITIONAL_APK\" ]]; then \
-        clean_list=echo $( echo \"${ADDITIONAL_APK}\" | tr ',' ' ') && \
-        echo \"Preparing to add additional apk [${clean_list}]\" && \
+        echo \"Preparing to add additional apk [${ADDITIONAL_APK}]\" && \
+        clean_list=$( echo \"${ADDITIONAL_APK}\" | tr ',' ' ') && \
         echo \"CMD: apk add --no-cache ${clean_list}\" && \
         apk add --no-cache ${clean_list} ; \
     fi && \
