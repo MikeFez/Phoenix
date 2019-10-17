@@ -24,7 +24,6 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     echo \"GIT_REPO is ${GIT_REPO}\" && \
     echo \"REPO_BRANCH is ${REPO_BRANCH}\" && \
     echo \"LAUNCH_CMD is ${LAUNCH_CMD}\" && \
-    echo \"ADDITIONAL_APK is ${ADDITIONAL_APK}\" && \
     echo \" \" && \
     \
     \
@@ -32,8 +31,8 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     if ! [[ -z \"$ADDITIONAL_APK\" ]]; then \
         clean_list=echo $( echo \"$ADDITIONAL_APK\" | tr ',' ' ') && \
         echo \"Preparing to add additional apk [${clean_list}]\" && \
-        apk add --no-cache ${clean_list} ; \
-    fi ; \
+        apk add --no-cache $clean_list ; \
+    fi && \
     mkdir -p ${GIT_LOCAL_FOLDER} && \
     cd ${GIT_LOCAL_FOLDER} && \
     rm -f /GIT_UPDATE_DETECTED /GIT_COMMITS /TASK_SUBPROCESS_PID && \
