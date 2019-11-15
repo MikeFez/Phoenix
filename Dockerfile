@@ -68,7 +68,6 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     \
     if ! [[ -z $CRONTAB_SCHEDULE ]]; then \
         echo \"Updates installed, configuring crontab...\" && \
-        service cron start && \
         ( ( crontab -l | grep -v -F \"${CRONTAB_SCHEDULE} cd ${GIT_LOCAL_FOLDER} && ${LAUNCH_CMD}\" ; echo \"${CRONTAB_SCHEDULE} cd ${GIT_LOCAL_FOLDER} && ${LAUNCH_CMD} > /proc/1/fd/1 2> /proc/1/fd/2\n\" ) | crontab - ) > /dev/null 2>&1 && \
         echo \"Registered cron task [${CRONTAB_SCHEDULE} cd ${GIT_LOCAL_FOLDER} && ${LAUNCH_CMD}]\" ; \
     else \
