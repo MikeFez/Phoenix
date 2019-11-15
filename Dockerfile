@@ -68,7 +68,6 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     \
     if ! [[ -z \"$CRONTAB_SCHEDULE\" ]]; then \
         echo \"Updates installed, configuring crontab...\" && \
-        crontab -r && \
         (crontab -l 2>/dev/null; echo \"${CRONTAB_SCHEDULE} cd ${GIT_LOCAL_FOLDER} && ${LAUNCH_CMD} > /proc/1/fd/1 2> /proc/1/fd/2\n\") | crontab - && \
         echo \"Registered cron task [${CRONTAB_SCHEDULE} cd ${GIT_LOCAL_FOLDER} && ${LAUNCH_CMD}]\" ; \
     else \
@@ -106,5 +105,5 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     fi"]
 
 RUN apk update && \
-    apk add --no-cache curl git nano htop psmisc openssh python3 procps busybox-initscripts && \
+    apk add --no-cache curl git nano htop psmisc openssh python3 procps dcron && \
     pip3 install virtualenv
