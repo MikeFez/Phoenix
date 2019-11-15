@@ -69,8 +69,8 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     if ! [[ -z $CRONTAB_SCHEDULE ]]; then \
         echo \"Updates installed, configuring crontab...\" && \
         service cron start && \
-        ( ( crontab -l | grep -v -F \"${CRONTAB_SCHEDULE} ${LAUNCH_CMD}\" ; echo \"${CRONTAB_SCHEDULE} ${LAUNCH_CMD} > /proc/1/fd/1 2> /proc/1/fd/2\n\" ) | crontab - ) > /dev/null 2>&1 && \
-        echo \"Registered cron task [${CRONTAB_SCHEDULE} ${LAUNCH_CMD}]\" ; \
+        ( ( crontab -l | grep -v -F \"${CRONTAB_SCHEDULE} cd ${GIT_LOCAL_FOLDER} && ${LAUNCH_CMD}\" ; echo \"${CRONTAB_SCHEDULE} cd ${GIT_LOCAL_FOLDER} && ${LAUNCH_CMD} > /proc/1/fd/1 2> /proc/1/fd/2\n\" ) | crontab - ) > /dev/null 2>&1 && \
+        echo \"Registered cron task [${CRONTAB_SCHEDULE} cd ${GIT_LOCAL_FOLDER} && ${LAUNCH_CMD}]\" ; \
     else \
         echo \"Executing LAUNCH_CMD as a background process: ${LAUNCH_CMD}, then capturing PID to file\" && \
         (${LAUNCH_CMD} & echo $! > /TASK_SUBPROCESS_PID && chmod -R 755 /TASK_SUBPROCESS_PID && echo \"Created /TASK_SUBPROCESS_PID containing subprocess PID\") && \
