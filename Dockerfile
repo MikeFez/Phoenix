@@ -77,7 +77,7 @@ ENTRYPOINT ["/bin/sh", "-c", " \
         while ! [[ -f /TASK_SUBPROCESS_PID ]]; do sleep 1; done && \
         echo \"Attempting to load /TASK_SUBPROCESS_PID to variable in main shell\" && \
         TASK_SUBPROCESS_PID=`cat /TASK_SUBPROCESS_PID` && \
-        echo \"Background PID reported as: ${TASK_SUBPROCESS_PID}\" && \
+        echo \"Background PID reported as: ${TASK_SUBPROCESS_PID}\" ; \
     fi && \
     \
     \
