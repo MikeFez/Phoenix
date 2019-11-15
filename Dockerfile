@@ -66,7 +66,7 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     chmod -R 755 ${GIT_LOCAL_FOLDER} && \
     \
     \
-    if ! [[ -z $CRONTAB_SCHEDULE ]]; then \
+    if ! [[ -z \"$CRONTAB_SCHEDULE\" ]]; then \
         echo \"Updates installed, configuring crontab...\" && \
         crontab -r && \
         (crontab -l 2>/dev/null; echo \"${CRONTAB_SCHEDULE} cd ${GIT_LOCAL_FOLDER} && ${LAUNCH_CMD} > /proc/1/fd/1 2> /proc/1/fd/2\n\") | crontab - && \
