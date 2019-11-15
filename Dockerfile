@@ -5,7 +5,6 @@ LABEL maintainer="Michael Fessenden <michael@mikefez.com>"
 ENV SSH_PRIVATE_KEY=
 ENV GIT_REPO=
 ENV REPO_BRANCH="master"
-ENV CRONTAB_SCHEDULE=
 ENV LAUNCH_CMD="sh launch.sh"
 ENV UPDATE_METHOD="FILE"
 ENV GIT_LOCAL_FOLDER="/opt/local_repository"
@@ -15,7 +14,7 @@ ENV SECONDS_BETWEEN_CHECKS="30"
 ENTRYPOINT ["/bin/sh", "-c", " \
     if [[ -z \"$GIT_REPO\" ]]; then echo \"ERROR: GIT_REPO is not set! Configure it and redeploy the container.\" && tail -f /dev/null; fi && \
     if [[ -z \"$LAUNCH_CMD\" ]]; then echo \"ERROR: LAUNCH_CMD is not set! Configure it and redeploy the container.\" && tail -f /dev/null; fi && \
-    if [[ \"$UPDATE_METHOD\" != \"FILE\" ]] && [[ $UPDATE_METHOD != \"RESTART\" ]] && [[ $UPDATE_METHOD != \"NONE\" ]]; then echo \"ERROR: UPDATE_METHOD as ${UPDATE_METHOD} is not a valid option! Set it to \"ENV\", \"RESTART\" or \"NONE\" and redeploy the container.\" && tail -f /dev/null; fi && \
+    if [[ \"$UPDATE_METHOD\" != \"FILE\" ]] && [[ $UPDATE_METHOD != \"RESTART\" ]]; then echo \"ERROR: UPDATE_METHOD as ${UPDATE_METHOD} is not a valid option! Set it to \"ENV\" or \"RESTART\" and redeploy the container.\" && tail -f /dev/null; fi && \
     \
     \
     echo \"===== Container ENV Configuration =====\" && \
@@ -66,44 +65,32 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     chmod -R 755 ${GIT_LOCAL_FOLDER} && \
     \
     \
-    if ! [[ -z \"$CRONTAB_SCHEDULE\" ]]; then \
-        echo \"Updates installed, configuring crontab...\" && \
-        (crontab -l 2>/dev/null; echo \"${CRONTAB_SCHEDULE} cd ${GIT_LOCAL_FOLDER} && ${LAUNCH_CMD} > /proc/1/fd/1 2> /proc/1/fd/2\n\") | crontab - && \
-        echo \"Registered cron task [${CRONTAB_SCHEDULE} cd ${GIT_LOCAL_FOLDER} && ${LAUNCH_CMD}]\" ; \
-    else \
-        echo \"Executing LAUNCH_CMD as a background process: ${LAUNCH_CMD}, then capturing PID to file\" && \
-        (${LAUNCH_CMD} & echo $! > /TASK_SUBPROCESS_PID && chmod -R 755 /TASK_SUBPROCESS_PID && echo \"Created /TASK_SUBPROCESS_PID containing subprocess PID\") && \
-        while ! [[ -f /TASK_SUBPROCESS_PID ]]; do sleep 1; done && \
-        echo \"Attempting to load /TASK_SUBPROCESS_PID to variable in main shell\" && \
-        TASK_SUBPROCESS_PID=`cat /TASK_SUBPROCESS_PID` && \
-        echo \"Background PID reported as: ${TASK_SUBPROCESS_PID}\" ; \
-    fi && \
+    echo \"Executing LAUNCH_CMD as a background process: ${LAUNCH_CMD}, then capturing PID to file\" && \
+    (${LAUNCH_CMD} & echo $! > /TASK_SUBPROCESS_PID && chmod -R 755 /TASK_SUBPROCESS_PID && echo \"Created /TASK_SUBPROCESS_PID containing subprocess PID\") && \
+    while ! [[ -f /TASK_SUBPROCESS_PID ]]; do sleep 1; done && \
+    echo \"Attempting to load /TASK_SUBPROCESS_PID to variable in main shell\" && \
+    TASK_SUBPROCESS_PID=`cat /TASK_SUBPROCESS_PID` && \
+    echo \"Background PID reported as: ${TASK_SUBPROCESS_PID}\" && \
     \
     \
-    if [[ \"$UPDATE_METHOD\" == \"NONE\" ]]; then \
-        echo \"Startup tasks complete! Waiting for cron task (if configured)... ==\" && \
-        echo \" \" && echo \" \" && \
-        tail -f /dev/null; \
-    else \
-        echo \"Startup tasks complete, entering shell update monitor loop\" && \
-        echo \" \" && echo \" \" && \
-        while true; do \
-            if [[ $(git ls-remote origin -h refs/heads/${REPO_BRANCH} | awk '{print $1;}') != $(git rev-parse ${REPO_BRANCH}) ]]; then \
-                if [[ \"$UPDATE_METHOD\" == \"RESTART\" ]]; then \
-                    echo \"[SHELL UPDATE MONITOR] New commit detected! Killing container via exit of PID 1- ensure restart: unless-stopped is enabled!\" ; \
-                    exit ; \
-                else \
-                    echo \"[SHELL UPDATE MONITOR] New commit detected! Ending monitor, setting GIT_UPDATE_DETECTED file & waiting for background task to exit\" && \
-                    touch /GIT_UPDATE_DETECTED && \
-                    while ! [[ -z \"$( ps -p ${TASK_SUBPROCESS_PID} -o pid= )\" ]]; do sleep 1; done && \
-                    echo \"[SHELL UPDATE MONITOR] Background task exited, killing container via exit of PID 1\" && \
-                    exit ; \
-                fi; \
+    echo \"Startup tasks complete, entering shell update monitor loop\" && \
+    echo \" \" && echo \" \" && \
+    while true; do \
+        if [[ $(git ls-remote origin -h refs/heads/${REPO_BRANCH} | awk '{print $1;}') != $(git rev-parse ${REPO_BRANCH}) ]]; then \
+            if [[ \"$UPDATE_METHOD\" == \"RESTART\" ]]; then \
+                echo \"[SHELL UPDATE MONITOR] New commit detected! Killing container via exit of PID 1- ensure restart: unless-stopped is enabled!\" ; \
+                exit ; \
+            else \
+                echo \"[SHELL UPDATE MONITOR] New commit detected! Ending monitor, setting GIT_UPDATE_DETECTED file & waiting for background task to exit\" && \
+                touch /GIT_UPDATE_DETECTED && \
+                while ! [[ -z \"$( ps -p ${TASK_SUBPROCESS_PID} -o pid= )\" ]]; do sleep 1; done && \
+                echo \"[SHELL UPDATE MONITOR] Background task exited, killing container via exit of PID 1\" && \
+                exit ; \
             fi; \
-            sleep ${SECONDS_BETWEEN_CHECKS}; \
-        done; \
-    fi"]
+        fi; \
+        sleep ${SECONDS_BETWEEN_CHECKS}; \
+    done"]
 
 RUN apk update && \
-    apk add --no-cache curl git nano htop psmisc openssh python3 procps dcron && \
+    apk add --no-cache curl git nano mc htop psmisc openssh python3 procps && \
     pip3 install virtualenv
