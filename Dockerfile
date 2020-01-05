@@ -10,6 +10,8 @@ ENV UPDATE_METHOD="FILE"
 ENV GIT_LOCAL_FOLDER="/opt/local_repository"
 ENV ADDITIONAL_APK=
 ENV SECONDS_BETWEEN_CHECKS="30"
+ENV PUID="1000"
+ENV PGID="1000"
 
 ENTRYPOINT ["/bin/sh", "-c", " \
     if [[ -z \"$GIT_REPO\" ]]; then echo \"ERROR: GIT_REPO is not set! Configure it and redeploy the container.\" && tail -f /dev/null; fi && \
@@ -25,6 +27,11 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     echo \"REPO_BRANCH is ${REPO_BRANCH}\" && \
     echo \"LAUNCH_CMD is ${LAUNCH_CMD}\" && \
     echo \" \" && \
+    \
+    /usr/sbin/groupadd -g ${PGID} container_group ; \
+    /usr/sbin/useradd -s /bin/sh -g ${PGID} -u ${PUID} container_user ; \
+    echo \"builder ALL=(ALL) NOPASSWD:ALL\" >> /etc/sudoers ; \
+    su container_user && \
     \
     \
     echo \"===== Startup Tasks =====\" && \
@@ -92,5 +99,5 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     done"]
 
 RUN apk update && \
-    apk add --no-cache curl git nano mc htop psmisc openssh python3 procps && \
+    apk add --no-cache curl git nano mc htop psmisc openssh python3 procps shadow && \
     pip3 install virtualenv
