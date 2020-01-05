@@ -30,7 +30,7 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     \
     /usr/sbin/groupadd -g ${PGID} container_group ; \
     /usr/sbin/useradd -s /bin/sh -g ${PGID} -u ${PUID} container_user ; \
-    echo \"builder ALL=(ALL) NOPASSWD:ALL\" >> /etc/sudoers ; \
+    echo \"container_user ALL=(ALL) NOPASSWD:ALL\" >> /etc/sudoers ; \
     su container_user && \
     \
     \
@@ -68,6 +68,7 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     echo \"Creating /GIT_COMMITS file for versioning if needed\" && \
     git rev-list --count HEAD > /GIT_COMMITS && \
     chmod -R 755 /GIT_COMMITS && \
+    sudo chown -R ${PUID}:${PGID} ${GIT_LOCAL_FOLDER} && \
     echo \"Executing chmod -R 755 ${GIT_LOCAL_FOLDER}\" && \
     chmod -R 755 ${GIT_LOCAL_FOLDER} && \
     \
