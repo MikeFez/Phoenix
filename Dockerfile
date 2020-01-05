@@ -70,7 +70,7 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     chmod -R 755 /GIT_COMMITS && \
     sudo chown -R ${PUID}:${PGID} ${GIT_LOCAL_FOLDER} && \
     echo \"Executing chmod -R 755 ${GIT_LOCAL_FOLDER}\" && \
-    chmod -R 755 ${GIT_LOCAL_FOLDER} && \
+    chmod -R 775 ${GIT_LOCAL_FOLDER} && \
     \
     \
     echo \"Executing LAUNCH_CMD as a background process: ${LAUNCH_CMD}, then capturing PID to file\" && \
