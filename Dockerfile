@@ -68,6 +68,7 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     echo \"Creating /GIT_COMMITS file for versioning if needed\" && \
     git rev-list --count HEAD > /GIT_COMMITS && \
     chmod -R 755 /GIT_COMMITS && \
+    echo \"Executing sudo chown -R ${PUID}:${PGID} ${GIT_LOCAL_FOLDER}\" && \
     sudo chown -R ${PUID}:${PGID} ${GIT_LOCAL_FOLDER} && \
     echo \"Executing chmod -R 755 ${GIT_LOCAL_FOLDER}\" && \
     chmod -R 775 ${GIT_LOCAL_FOLDER} && \
