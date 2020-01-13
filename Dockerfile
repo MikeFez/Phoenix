@@ -101,5 +101,5 @@ ENTRYPOINT ["/bin/sh", "-c", " \
     done"]
 
 RUN apk update && \
-    apk add --no-cache curl git nano mc htop psmisc openssh python3 procps shadow && \
+    apk add --no-cache curl git nano mc htop psmisc openssh python3 libffi-dev openssl-dev build-base python3-dev procps shadow && \
     pip3 install virtualenv
